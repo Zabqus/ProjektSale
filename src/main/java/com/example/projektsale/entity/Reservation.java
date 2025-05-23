@@ -37,10 +37,26 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING;
 
+    @Column(length = 500)
+    private String purpose;
 
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
 
-
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
