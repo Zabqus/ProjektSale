@@ -1,8 +1,8 @@
 
 INSERT INTO users (username, email, password, role) VALUES
-('admin', 'admin@test.com', '$2a$10$N.zmdr9k7uOCQb0bxVAGKe.OcVb/XbOhX.HS8.y.o9.0EY1OGP6a6', 'ADMIN'),
-('john', 'john@test.com', '$2a$10$N.zmdr9k7uOCQb0bxVAGKe.OcVb/XbOhX.HS8.y.o9.0EY1OGP6a6', 'USER'),
-('jane', 'jane@test.com', '$2a$10$N.zmdr9k7uOCQb0bxVAGKe.OcVb/XbOhX.HS8.y.o9.0EY1OGP6a6', 'USER');
+('admin', 'admin@test.com', '$2a$10$LraxSWWNIah72XF1IughW.0HDvPPi1rPfmbEL4Dxa/0TjmjPvWhH.', 'ADMIN'),
+('Wiktor', 'wiktor@test.com', '$2a$10$LraxSWWNIah72XF1IughW.0HDvPPi1rPfmbEL4Dxa/0TjmjPvWhH.', 'USER'),
+('user', 'user@test.com', '$2a$10$LraxSWWNIah72XF1IughW.0HDvPPi1rPfmbEL4Dxa/0TjmjPvWhH.', 'USER');
 
 
 INSERT INTO rooms (name, capacity, location, description) VALUES
