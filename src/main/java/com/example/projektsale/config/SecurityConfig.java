@@ -30,9 +30,21 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/equipment/computer", "/api/equipment/projector").hasRole("ADMIN")
+
+                        // User and Admin endpoints
+                        .requestMatchers("/api/rooms/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/reservations/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/equipment/**").hasAnyRole("USER", "ADMIN")
+
+                        // All other requests need authentication
                         .anyRequest().hasAnyRole("USER", "ADMIN")
                 )
                 .httpBasic(withDefaults())

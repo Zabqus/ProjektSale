@@ -45,4 +45,13 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
+
+
+    public List<Reservation> getReservationsByUser(Long userId) {
+        return reservationRepository.findByUserIdOrderByStartTimeDesc(userId);
+    }
+
+    public List<Reservation> getReservationsByRoom(Long roomId) {
+        return reservationRepository.findByRoomIdOrderByStartTime(roomId);
+    }
 }
