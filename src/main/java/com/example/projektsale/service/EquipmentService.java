@@ -61,4 +61,9 @@ public class EquipmentService {
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
         equipment.performMaintenance();
     }
+
+
+    public List<Equipment> getEquipmentByRoom(Long roomId) {
+        return equipmentRepository.findByRoomId(roomId);
+    }
 }

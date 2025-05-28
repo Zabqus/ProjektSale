@@ -6,8 +6,9 @@ services:
     container_name: projekt-sale-db
     environment:
       POSTGRES_DB: projekt_sale
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:
@@ -24,7 +25,7 @@ services:
       - postgres
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/projekt_sale
-      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: admin
     networks:
       - app-network

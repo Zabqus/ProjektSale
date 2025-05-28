@@ -54,5 +54,9 @@ public class EquipmentController {
         return ResponseEntity.ok("Maintenance performed on equipment with ID: " + id);
     }
 
-
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List<Equipment>> getEquipmentByRoom(@PathVariable Long roomId) {
+        List<Equipment> equipment = equipmentService.getEquipmentByRoom(roomId);
+        return ResponseEntity.ok(equipment);
+    }
 }
