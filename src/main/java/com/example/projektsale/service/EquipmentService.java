@@ -4,6 +4,7 @@ import com.example.projektsale.entity.ComputerEquipment;
 import com.example.projektsale.entity.Equipment;
 import com.example.projektsale.entity.ProjectorEquipment;
 import com.example.projektsale.entity.Room;
+import com.example.projektsale.factory.EquipmentFactory; // NOWE!
 import com.example.projektsale.repository.EquipmentRepository;
 import com.example.projektsale.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,46 +25,39 @@ public class EquipmentService {
         return equipmentRepository.findAll();
     }
 
+
     public ComputerEquipment createComputer(String name, String description, Long roomId,
                                             String operatingSystem, String processor, Integer ramGb) {
         Room room = roomRepository.findById(roomId).orElse(null);
 
-        ComputerEquipment computer = new ComputerEquipment();
-        computer.setName(name);
+
+        ComputerEquipment computer = (ComputerEquipment) EquipmentFactory.createComputer(
+                name, operatingSystem, processor, ramGb
+        );
         computer.setDescription(description);
         computer.setRoom(room);
-        computer.setOperatingSystem(operatingSystem);
-        computer.setProcessor(processor);
-        computer.setRamGb(ramGb);
-        computer.setIsWorking(true);
 
         return equipmentRepository.save(computer);
     }
+
 
     public ProjectorEquipment createProjector(String name, String description, Long roomId,
                                               String resolution, Integer brightness) {
         Room room = roomRepository.findById(roomId).orElse(null);
 
-        ProjectorEquipment projector = new ProjectorEquipment();
-        projector.setName(name);
+
+        ProjectorEquipment projector = (ProjectorEquipment) EquipmentFactory.createProjector(
+                name, resolution, brightness
+        );
         projector.setDescription(description);
         projector.setRoom(room);
-        projector.setResolution(resolution);
-        projector.setBrightness(brightness);
-        projector.setIsWorking(true);
 
         return equipmentRepository.save(projector);
     }
-
 
     public void performMaintenanceOnEquipment(Long id) {
         Equipment equipment = equipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
         equipment.performMaintenance();
-    }
-
-
-    public List<Equipment> getEquipmentByRoom(Long roomId) {
-        return equipmentRepository.findByRoomId(roomId);
     }
 }

@@ -4,6 +4,7 @@ import com.example.projektsale.entity.Reservation;
 import com.example.projektsale.entity.Room;
 import com.example.projektsale.entity.User;
 import com.example.projektsale.enums.ReservationStatus;
+import com.example.projektsale.observer.ReservationObserver; // NOWE!
 import com.example.projektsale.repository.ReservationRepository;
 import com.example.projektsale.repository.RoomRepository;
 import com.example.projektsale.repository.UserRepository;
@@ -25,6 +26,10 @@ public class ReservationService {
     @Autowired
     private RoomRepository roomRepository;
 
+
+    @Autowired
+    private List<ReservationObserver> observers;
+
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
@@ -43,9 +48,13 @@ public class ReservationService {
         reservation.setPurpose(purpose);
         reservation.setStatus(ReservationStatus.PENDING);
 
-        return reservationRepository.save(reservation);
-    }
+        Reservation savedReservation = reservationRepository.save(reservation);
 
+
+        observers.forEach(observer -> observer.onReservationCreated(savedReservation));
+
+        return savedReservation;
+    }
 
     public List<Reservation> getReservationsByUser(Long userId) {
         return reservationRepository.findByUserIdOrderByStartTimeDesc(userId);
