@@ -3,15 +3,14 @@ package com.example.projektsale.controller;
 import com.example.projektsale.config.SecurityConfig;
 import com.example.projektsale.entity.User;
 import com.example.projektsale.enums.Role;
+import com.example.projektsale.repository.UserRepository;
 import com.example.projektsale.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,8 +23,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(UserController.class)
+@Import(SecurityConfig.class)
 class UserControllerTest {
 
     @Autowired
@@ -33,6 +32,9 @@ class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private User testUser;
     private User adminUser;
@@ -68,7 +70,6 @@ class UserControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void shouldReturn403ForUserRoleWhenGettingAllUsers() throws Exception {
-
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isForbidden());
     }

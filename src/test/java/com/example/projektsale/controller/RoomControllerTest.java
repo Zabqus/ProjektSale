@@ -2,14 +2,14 @@ package com.example.projektsale.controller;
 
 import com.example.projektsale.config.SecurityConfig;
 import com.example.projektsale.entity.Room;
-import com.example.projektsale.service.ReservationService;
+import com.example.projektsale.repository.UserRepository;
 import com.example.projektsale.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,8 +22,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(RoomController.class)
+@Import(SecurityConfig.class)
 class RoomControllerTest {
 
     @Autowired
@@ -33,7 +33,7 @@ class RoomControllerTest {
     private RoomService roomService;
 
     @MockBean
-    private ReservationService reservationService;
+    private UserRepository userRepository;
 
     private Room testRoom;
 
@@ -75,7 +75,6 @@ class RoomControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void shouldGetRoomByIdAsUser() throws Exception {
-
         when(roomService.getRoomById(1L)).thenReturn(testRoom);
 
         mockMvc.perform(get("/api/rooms/1"))

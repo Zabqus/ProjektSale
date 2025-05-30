@@ -4,13 +4,14 @@ import com.example.projektsale.config.SecurityConfig;
 import com.example.projektsale.entity.ComputerEquipment;
 import com.example.projektsale.entity.Equipment;
 import com.example.projektsale.entity.ProjectorEquipment;
+import com.example.projektsale.repository.UserRepository;
 import com.example.projektsale.service.EquipmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,8 +25,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(EquipmentController.class)
+@Import(SecurityConfig.class)
 class EquipmentControllerTest {
 
     @Autowired
@@ -33,6 +34,9 @@ class EquipmentControllerTest {
 
     @MockBean
     private EquipmentService equipmentService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private ComputerEquipment testComputer;
     private ProjectorEquipment testProjector;
@@ -69,7 +73,6 @@ class EquipmentControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldCreateComputerAsAdmin() throws Exception {
-
         when(equipmentService.createComputer(
                 eq("New Computer"), eq("Description"), eq(1L),
                 eq("Windows 11"), eq("Intel i7"), eq(16)))
