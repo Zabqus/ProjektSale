@@ -1,5 +1,6 @@
 package com.example.projektsale.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import lombok.Data;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "equipment_type", discriminatorType = DiscriminatorType.STRING)
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class Equipment {
 
     @Id
@@ -25,6 +27,7 @@ public abstract class Equipment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
+    @JsonIgnoreProperties({"reservations", "equipment"})
     private Room room;
 
     public abstract String getEquipmentType();

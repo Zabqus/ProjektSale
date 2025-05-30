@@ -45,8 +45,7 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-
-        System.out.println("📧 Powiadomienie: Nowa rezerwacja dla sali " +
+        System.out.println("Powiadomienie: Nowa rezerwacja dla sali " +
                 room.getName() + " przez użytkownika " + user.getUsername());
 
         return savedReservation;
