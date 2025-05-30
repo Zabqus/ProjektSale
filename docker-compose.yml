@@ -1,38 +1,53 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:15
-    container_name: projekt-sale-db
+    image: postgres:15-alpine
+    container_name: projektsale-postgres
     environment:
-      POSTGRES_DB: projekt_sale
+      POSTGRES_DB: projektsale_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
-      - app-network
+      - projektsale-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
-    build: .
-    container_name: projekt-sale-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projektsale-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/projektsale_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/projektsale_db
+      SPRING_FLYWAY_USER: postgres
+      SPRING_FLYWAY_PASSWORD: postgres
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/projekt_sale
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: admin
     networks:
-      - app-network
+      - projektsale-network
+    volumes:
+      - app_logs:/app/logs
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
+  app_logs:
+    driver: local
 
 networks:
-  app-network:
+  projektsale-network:
     driver: bridge
