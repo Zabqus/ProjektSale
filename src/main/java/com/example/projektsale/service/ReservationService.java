@@ -58,4 +58,13 @@ public class ReservationService {
     public List<Reservation> getReservationsByRoom(Long roomId) {
         return reservationRepository.findByRoomIdOrderByStartTime(roomId);
     }
+
+
+    public void deleteReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found with id: " + id));
+
+        reservationRepository.delete(reservation);
+        System.out.println("Reservation deleted: " + reservation.getId() + " for room " + reservation.getRoom().getName());
+    }
 }

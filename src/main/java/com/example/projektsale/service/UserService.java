@@ -35,4 +35,14 @@ public class UserService {
         user.setRole(role);
         return userRepository.save(user);
     }
+
+
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        userRepository.delete(user);
+        System.out.println("User deleted: " + user.getUsername() + " (ID: " + user.getId() + ")");
+    }
+
 }

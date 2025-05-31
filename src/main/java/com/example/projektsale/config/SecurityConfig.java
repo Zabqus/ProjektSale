@@ -1,5 +1,6 @@
 package com.example.projektsale.config;
 
+import org.springframework.http.HttpMethod;
 import com.example.projektsale.entity.User;
 import com.example.projektsale.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/equipment/computer").hasRole("ADMIN")
                         .requestMatchers("/api/equipment/projector").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/equipment/**").hasRole("ADMIN")
 
 
                         .requestMatchers("/api/rooms/**").hasAnyRole("USER", "ADMIN")
