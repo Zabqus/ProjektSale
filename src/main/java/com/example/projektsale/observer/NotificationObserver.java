@@ -9,7 +9,7 @@ public class NotificationObserver implements ReservationObserver {
     @Override
     public void onReservationCreated(Reservation reservation) {
         if (reservation == null) {
-            System.out.println("⚠️ Powiadomienie: Otrzymano null reservation");
+            System.out.println("Powiadomienie: Otrzymano null reservation");
             return;
         }
 

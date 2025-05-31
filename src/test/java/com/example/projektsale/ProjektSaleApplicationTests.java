@@ -10,7 +10,6 @@ class ProjektSaleApplicationTests {
 
     @Test
     void contextLoads() {
-        // Test sprawdza czy kontekst aplikacji ładuje się poprawnie z PostgreSQL
     }
 
 }

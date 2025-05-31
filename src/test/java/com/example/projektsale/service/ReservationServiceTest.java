@@ -37,7 +37,6 @@ class ReservationServiceTest {
     @Mock
     private RoomRepository roomRepository;
 
-    // DODANE - mockowanie NotificationObserver
     @Mock
     private NotificationObserver notificationObserver;
 
@@ -88,10 +87,8 @@ class ReservationServiceTest {
         assertEquals(testUser, result.getUser());
         assertEquals(testRoom, result.getRoom());
 
-        // WERYFIKACJA - sprawdzamy czy repository zostało wywołane
         verify(reservationRepository).save(any(Reservation.class));
 
-        // NOWE - sprawdzamy czy observer został powiadomiony
         verify(notificationObserver).onReservationCreated(any(Reservation.class));
     }
 
@@ -103,7 +100,6 @@ class ReservationServiceTest {
                 () -> reservationService.createReservation(999L, 1L, startTime, endTime, "Test"));
         assertEquals("User not found", exception.getMessage());
 
-        // Observer NIE powinien być wywołany przy błędzie
         verify(notificationObserver, never()).onReservationCreated(any());
     }
 
@@ -116,7 +112,6 @@ class ReservationServiceTest {
                 () -> reservationService.createReservation(1L, 999L, startTime, endTime, "Test"));
         assertEquals("Room not found", exception.getMessage());
 
-        // Observer NIE powinien być wywołany przy błędzie
         verify(notificationObserver, never()).onReservationCreated(any());
     }
 
