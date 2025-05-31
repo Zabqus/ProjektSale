@@ -21,8 +21,9 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -120,4 +121,19 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].purpose").value("Test meeting"));
     }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldDeleteReservationAsUser() throws Exception {
+        doNothing().when(reservationService).deleteReservation(1L);
+
+        mockMvc.perform(delete("/api/reservations/1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Reservation with ID 1 has been deleted successfully")));
+
+        verify(reservationService).deleteReservation(1L);
+    }
+
+
 }

@@ -118,4 +118,27 @@ class UserServiceTest {
         assertEquals("testuser", result.get(0).getUsername());
         assertEquals("admin", result.get(1).getUsername());
     }
+
+
+
+    @Test
+    void shouldDeleteUser() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        doNothing().when(userRepository).delete(testUser);
+
+        userService.deleteUser(1L);
+
+        verify(userRepository).findById(1L);
+        verify(userRepository).delete(testUser);
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistentUser() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> userService.deleteUser(999L));
+        assertEquals("User not found with id: 999", exception.getMessage());
+    }
 }

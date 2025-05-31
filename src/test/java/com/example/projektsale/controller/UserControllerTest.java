@@ -17,8 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -113,4 +114,27 @@ class UserControllerTest {
                         .param("role", "USER"))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldDeleteUserAsAdmin() throws Exception {
+        doNothing().when(userService).deleteUser(1L);
+
+        mockMvc.perform(delete("/api/users/1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("User with ID 1 has been deleted successfully")));
+
+        verify(userService).deleteUser(1L);
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldReturn403ForUserRoleWhenDeletingUser() throws Exception {
+        mockMvc.perform(delete("/api/users/1")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+
 }

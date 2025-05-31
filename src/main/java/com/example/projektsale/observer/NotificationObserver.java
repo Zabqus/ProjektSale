@@ -8,9 +8,20 @@ public class NotificationObserver implements ReservationObserver {
 
     @Override
     public void onReservationCreated(Reservation reservation) {
-        System.out.println("Powiadomienie: Nowa rezerwacja dla sali " +
-                reservation.getRoom().getName() +
-                " przez użytkownika " +
-                reservation.getUser().getUsername());
+        if (reservation == null) {
+            System.out.println("⚠️ Powiadomienie: Otrzymano null reservation");
+            return;
+        }
+
+        String roomName = (reservation.getRoom() != null)
+                ? reservation.getRoom().getName()
+                : "Nieznana sala";
+
+        String userName = (reservation.getUser() != null)
+                ? reservation.getUser().getUsername()
+                : "Nieznany użytkownik";
+
+        System.out.println("Powiadomienie: Nowa rezerwacja dla sali " + roomName +
+                " przez użytkownika " + userName);
     }
 }

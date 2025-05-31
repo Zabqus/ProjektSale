@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -144,4 +144,26 @@ class EquipmentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Maintenance performed on equipment with ID: 1")));
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldDeleteEquipmentAsAdmin() throws Exception {
+        doNothing().when(equipmentService).deleteEquipment(1L);
+
+        mockMvc.perform(delete("/api/equipment/1")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Equipment with ID 1 has been deleted successfully")));
+
+        verify(equipmentService).deleteEquipment(1L);
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldReturn403ForUserWhenDeletingEquipment() throws Exception {
+        mockMvc.perform(delete("/api/equipment/1")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
 }

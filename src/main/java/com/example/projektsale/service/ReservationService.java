@@ -4,6 +4,7 @@ import com.example.projektsale.entity.Reservation;
 import com.example.projektsale.entity.Room;
 import com.example.projektsale.entity.User;
 import com.example.projektsale.enums.ReservationStatus;
+import com.example.projektsale.observer.NotificationObserver;
 import com.example.projektsale.repository.ReservationRepository;
 import com.example.projektsale.repository.RoomRepository;
 import com.example.projektsale.repository.UserRepository;
@@ -25,6 +26,9 @@ public class ReservationService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private NotificationObserver notificationObserver;
+
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
@@ -45,8 +49,8 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        System.out.println("Powiadomienie: Nowa rezerwacja dla sali " +
-                room.getName() + " przez użytkownika " + user.getUsername());
+
+        notificationObserver.onReservationCreated(savedReservation);
 
         return savedReservation;
     }
@@ -58,7 +62,6 @@ public class ReservationService {
     public List<Reservation> getReservationsByRoom(Long roomId) {
         return reservationRepository.findByRoomIdOrderByStartTime(roomId);
     }
-
 
     public void deleteReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)

@@ -5,6 +5,7 @@ import com.example.projektsale.entity.Room;
 import com.example.projektsale.entity.User;
 import com.example.projektsale.enums.ReservationStatus;
 import com.example.projektsale.enums.Role;
+import com.example.projektsale.observer.NotificationObserver;
 import com.example.projektsale.repository.ReservationRepository;
 import com.example.projektsale.repository.RoomRepository;
 import com.example.projektsale.repository.UserRepository;
@@ -35,6 +36,10 @@ class ReservationServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
+
+    // DODANE - mockowanie NotificationObserver
+    @Mock
+    private NotificationObserver notificationObserver;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -82,17 +87,24 @@ class ReservationServiceTest {
         assertEquals(ReservationStatus.PENDING, result.getStatus());
         assertEquals(testUser, result.getUser());
         assertEquals(testRoom, result.getRoom());
+
+        // WERYFIKACJA - sprawdzamy czy repository zostało wywołane
         verify(reservationRepository).save(any(Reservation.class));
+
+        // NOWE - sprawdzamy czy observer został powiadomiony
+        verify(notificationObserver).onReservationCreated(any(Reservation.class));
     }
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
-
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> reservationService.createReservation(999L, 1L, startTime, endTime, "Test"));
         assertEquals("User not found", exception.getMessage());
+
+        // Observer NIE powinien być wywołany przy błędzie
+        verify(notificationObserver, never()).onReservationCreated(any());
     }
 
     @Test
@@ -103,6 +115,9 @@ class ReservationServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> reservationService.createReservation(1L, 999L, startTime, endTime, "Test"));
         assertEquals("Room not found", exception.getMessage());
+
+        // Observer NIE powinien być wywołany przy błędzie
+        verify(notificationObserver, never()).onReservationCreated(any());
     }
 
     @Test
@@ -137,4 +152,26 @@ class ReservationServiceTest {
         assertEquals(1, result.size());
         assertEquals(testReservation, result.get(0));
     }
+
+    @Test
+    void shouldDeleteReservation() {
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(testReservation));
+        doNothing().when(reservationRepository).delete(testReservation);
+
+        reservationService.deleteReservation(1L);
+
+        verify(reservationRepository).findById(1L);
+        verify(reservationRepository).delete(testReservation);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistentReservation() {
+        when(reservationRepository.findById(999L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> reservationService.deleteReservation(999L));
+        assertEquals("Reservation not found with id: 999", exception.getMessage());
+    }
+
+
 }

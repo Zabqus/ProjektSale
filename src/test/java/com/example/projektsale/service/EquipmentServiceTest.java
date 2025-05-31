@@ -123,4 +123,26 @@ class EquipmentServiceTest {
         assertTrue(result.contains(testComputer));
         assertTrue(result.contains(testProjector));
     }
+
+    @Test
+    void shouldDeleteEquipment() {
+        when(equipmentRepository.findById(1L)).thenReturn(Optional.of(testComputer));
+        doNothing().when(equipmentRepository).delete(testComputer);
+
+        equipmentService.deleteEquipment(1L);
+
+        verify(equipmentRepository).findById(1L);
+        verify(equipmentRepository).delete(testComputer);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistentEquipment() {
+        when(equipmentRepository.findById(999L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> equipmentService.deleteEquipment(999L));
+        assertEquals("Equipment not found with id: 999", exception.getMessage());
+    }
+
+
 }
